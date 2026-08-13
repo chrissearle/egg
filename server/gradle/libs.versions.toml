@@ -1,0 +1,64 @@
+[versions]
+arrow = "2.2.3"
+dependency_analysis = "3.18.0"
+detekt = "2.0.0-alpha.6"
+gradle_versions_filter = "0.1.16"
+jacoco = "0.8.15"
+kotest = "6.2.4"
+kotlin_logging = "8.0.4"
+kotlin = "2.4.10"
+kotlinter = "5.7.0"
+kotlinx_datetime = "0.8.0"
+kotlinx_serialization = "1.11.0"
+ktor = "3.5.2"
+logback = "1.6.2"
+mockk = "1.14.11"
+prometheus = "1.17.0"
+
+[libraries]
+arrow-core = { group = "io.arrow-kt", name = "arrow-core", version.ref = "arrow" }
+
+kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging-jvm", version.ref = "kotlin_logging" }
+
+ktor-server-call-id = { group = "io.ktor", name = "ktor-server-call-id-jvm", version.ref = "ktor" }
+ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging-jvm", version.ref = "ktor" }
+ktor-server-content-negotiation = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version.ref = "ktor" }
+ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-forwarded-header = { group = "io.ktor", name = "ktor-server-forwarded-header-jvm", version.ref = "ktor" }
+ktor-server-html-builder = { group = "io.ktor", name = "ktor-server-html-builder-jvm", version.ref = "ktor" }
+ktor-server-metrics-micrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version.ref = "ktor" }
+ktor-server-cio = { group = "io.ktor", name = "ktor-server-cio-jvm", version.ref = "ktor" }
+ktor-server-compression = { group = "io.ktor", name = "ktor-server-compression-jvm", version.ref = "ktor" }
+ktor-server-rate-limit = { group = "io.ktor", name = "ktor-server-rate-limit-jvm", version.ref = "ktor" }
+ktor-server-status-pages = { group = "io.ktor", name = "ktor-server-status-pages-jvm", version.ref = "ktor" }
+
+ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx_datetime" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx_serialization" }
+
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+
+micrometer-registry-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version.ref = "prometheus" }
+
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+[bundles]
+ktor-server = ["ktor-server-call-id", "ktor-server-call-logging", "ktor-server-compression", "ktor-server-content-negotiation", "ktor-server-core", "ktor-server-forwarded-header", "ktor-server-html-builder", "ktor-server-metrics-micrometer", "ktor-server-cio", "ktor-server-rate-limit", "ktor-server-status-pages"]
+serialization = ["ktor-serialization", "kotlinx-serialization", "kotlinx-datetime"]
+monitoring = ["kotlin-logging", "micrometer-registry-prometheus"]
+test = ["ktor-server-test-host", "kotest", "kotest-assertions", "ktor-client-mock", "mockk"]
+
+[plugins]
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency_analysis" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+versions = { id = "se.ascp.gradle.gradle-versions-filter", version.ref = "gradle_versions_filter" }
