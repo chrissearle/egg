@@ -6,7 +6,8 @@ file needs updating.
 
 Kept current as work lands. Each milestone is a coherent, verifiable chunk.
 
-**Status:** M1–M13 complete. M14 (export) remains.
+**Status:** M1–M13 complete. M14 is the web export, which is done and
+[live](https://egg.chrissearle.net); only the macOS native export remains.
 
 The goal is the **complete game**, not the MVP; the MVP was only a staging post. Levels 1–3
 are not completable until lifts land, so lifts come before everything else — see the note
@@ -31,7 +32,7 @@ under M7.
 | M11 | Full progression & difficulty | ✅ done |
 | M12 | High scores | ✅ done |
 | M13 | Settings & key remapping | ✅ done |
-| M14 | Export targets | ⬜ |
+| M14 | Export targets | 🔶 web done & live; macOS native remains |
 
 ---
 
@@ -750,11 +751,79 @@ late (ignored), reversing refused twice over, and releasing the direction not ki
 
 ---
 
-## M14 — Export targets ⬜
+## M14 — Export targets 🔶
 
 - [ ] macOS native
-- [ ] HTML5 / web
-- [ ] Confirm no case-sensitivity breakage in the web export (see the `assets/generated`
+- [x] HTML5 / web
+- [x] Confirm no case-sensitivity breakage in the web export (see the `assets/generated`
       note in `CLAUDE.md`)
-- [ ] Web specifics: audio needs a user gesture before it can start, and the canvas must hold
+- [x] Web specifics: audio needs a user gesture before it can start, and the canvas must hold
       keyboard focus
+
+**Live at [egg.chrissearle.net](https://egg.chrissearle.net).** `chuckie-egg.chrissearle.net`
+redirects there — one canonical origin, because the browser keeps high scores and key bindings
+per-origin and two names would give a player two separate sets of them.
+
+Both web caveats turned out to be already satisfied rather than needing work. Nothing plays at
+boot — `Sfx._ready` only builds players and pre-renders streams, and the title screen calls
+`stop_all()` — so the first sound cannot happen before a keypress and the autoplay gate is
+never hit. The shell sets `body { overflow: hidden }`, so the arrow keys cannot scroll the
+page out from under the canvas. Case sensitivity was settled long ago by the `assets/generated`
+naming; the Linux container and the browser both load every glyph and letter.
+
+**The export preset.** Threads are **off**, which is what makes `web_nothreads_*` the template
+Godot asks for. A threaded build needs cross-origin isolation (`COOP: same-origin` plus
+`COEP: require-corp`), and a 320 x 256 2D game gains nothing from it. `focus_canvas_on_start`
+is on, and `canvas_resize_policy` is **Project** rather than Adaptive — see below.
+
+**The canvas needed `!important`.** With the Project policy the engine writes the canvas size
+into its *inline* style on load and on every resize, pinning it to the 960 x 768 window
+override — which overflows any smaller window and ignores a stylesheet entirely, because
+inline styles lose only to `!important`. With that, `object-fit: contain` scales the buffer
+into whatever box is left and letterboxes it.
+
+**The game sits at `/play`, not `/`.** The root is a landing page carrying the controls, the
+credits and — not optional — the offer of source that GPL-3.0 requires when the WebAssembly
+build is handed to a visitor. That is conveying a copy of the program, not the "network use is
+not distribution" case. `/play` is a path rather than a second origin, so the move disturbed
+nobody's stored scores or key bindings.
+
+**The nav bar is injected, not templated.** `html/head_include` points at `/static/play.css`
+and `/static/play.js`; Godot regenerates `index.html` on every export, so anything edited
+there would be silently reverted by the next build.
+
+### The hosting, which was not in the original scope
+
+A leaderboard over four time windows cannot come from the game: `high_scores.gd` entries are
+`{score, name}` with **no timestamp**, and the project has no networking at all. So the site
+carries a small Kotlin/Ktor service in `server/` that owns the clock.
+
+- **Scores are stored as JSON Lines** at `/data/scores.jsonl`, one object per line, so a name
+  that turns out to be rude is fixed by opening the file in `vi`. A malformed line is skipped
+  rather than fatal — a slip in an editor must cost one entry, not the board.
+- **The page renders live** on each request, cached on the file's `(mtime, length)`. There is
+  no cron and no generated output, so an edit shows up on the next refresh with nothing to
+  re-run.
+- **The server stamps the time.** The client has no clock worth trusting and a supplied one
+  would be trivially forged.
+- **Submissions are rejected, not sanitised** — a plausible ceiling, a multiple of ten (every
+  award in the game is), a name inside the font's own 0x20-0x7e, and a per-IP rate limit read
+  from `X-Forwarded-For` since Traefik fronts it.
+- **The lettering is the game's own.** `tools/font_sheet_to_png.py` packs the BBC OS font into
+  one sheet from the same YAFF source `yaff_to_png.py` uses, and the pages mask each character
+  to its cell and tint it from the palette — the same thing `Message` does at draw time. The
+  heading uses the real ROM banner letters at `Banner`'s own column offsets.
+
+Deployed by Flux from `apps/egg.chrissearle.net` in the infrastructure repo: one replica with
+`strategy: Recreate`, because the store is a file on a hostPath and two pods would race it.
+Two Ingresses rather than one with two hosts — a Traefik middleware annotation applies to every
+router an Ingress produces, so one object carrying both names would send the canonical redirect
+to the canonical host as well, which is a redirect loop.
+
+⚠️ **The score store is not backed up.** It is a single file on one node's `/srv/egg`, with no
+replication and nothing copying it anywhere.
+
+⚠️ **`current_level` is shared between players, not per-player.** `_next_player` re-enters the
+level in play rather than that player's own, so in a two-player game the second player resumes
+wherever the first got to. It predates all of this and is a divergence from the original; the
+level recorded with a submitted score inherits it.

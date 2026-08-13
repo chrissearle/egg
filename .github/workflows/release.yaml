@@ -20,8 +20,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      # Retags what main already built rather than building again, so the image
-      # a tag releases is bit-for-bit the one that was tested on main.
       - name: Tag release from staging
         run: |
           docker buildx imagetools create \
@@ -32,9 +30,20 @@ jobs:
             --tag ghcr.io/${{ github.repository_owner }}/egg:${{ github.ref_name }} \
             ghcr.io/${{ github.repository_owner }}/egg:staging
 
-      # The Flux image bump goes here once apps/egg.chrissearle.net exists in
-      # flux-hetzner. It needs a FLUX_TOKEN secret and posts a repository
-      # dispatch of type bump-image with service, image and tag.
+      - name: Trigger Flux repo image bump
+        env:
+          FLUX_REPO_TOKEN: ${{ secrets.FLUX_TOKEN }}
+        run: |
+          SERVICE="egg.chrissearle.net"
+          IMAGE="ghcr.io/${{ github.repository_owner }}/egg"
+          TAG="${{ github.ref_name }}"
+
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${FLUX_REPO_TOKEN}" \
+            https://api.github.com/repos/chrissearle/flux-hetzner/dispatches \
+            -d "$(jq -n --arg svc "$SERVICE" --arg img "$IMAGE" --arg tag "$TAG" \
+              '{event_type:"bump-image", client_payload:{service:$svc, image:$img, tag:$tag}}')"
 
       - name: Generate summary
         run: |

@@ -110,9 +110,6 @@ jobs:
       - name: Set up tools
         uses: jdx/mise-action@v4
 
-      # No build-root-directory: setup-gradle v6 dropped it (it was a
-      # gradle-build-action input). The action finds the wrapper itself, and
-      # the step below runs in the right place.
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
@@ -251,10 +248,6 @@ jobs:
           docker buildx imagetools create \
             --tag "${IMAGE_BASE}:staging" \
             "${IMAGE_BASE}:latest"
-
-      # The Flux image bump is deliberately absent until the app exists in
-      # flux-hetzner — a dispatch naming a service with no manifests would just
-      # fail the sed in that repo's bump workflow.
 
       - name: Generate summary
         run: |
