@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/level_data.gd" id="1_level_data"]
+
+[resource]
+script = ExtResource("1_level_data")
+walls = Array[Vector3i]([Vector3i(1, 0, 4), Vector3i(1, 6, 10), Vector3i(1, 13, 19), Vector3i(6, 0, 4), Vector3i(6, 7, 10), Vector3i(6, 13, 17), Vector3i(5, 19, 19), Vector3i(12, 0, 1), Vector3i(13, 3, 3), Vector3i(14, 5, 5), Vector3i(15, 7, 8), Vector3i(11, 7, 8), Vector3i(11, 13, 16), Vector3i(10, 18, 19), Vector3i(16, 8, 10), Vector3i(17, 0, 0), Vector3i(18, 2, 2), Vector3i(19, 3, 3), Vector3i(20, 4, 4), Vector3i(21, 5, 5), Vector3i(21, 7, 10), Vector3i(16, 13, 14), Vector3i(16, 16, 16), Vector3i(16, 18, 19), Vector3i(21, 13, 15), Vector3i(21, 17, 19)])
+ladders = Array[Vector3i]([Vector3i(3, 2, 8), Vector3i(8, 2, 23), Vector3i(14, 12, 23), Vector3i(15, 2, 8), Vector3i(19, 16, 23)])
+have_lift = true
+lift_x = 11
+eggs = Array[Vector2i]([Vector2i(0, 2), Vector2i(0, 13), Vector2i(0, 18), Vector2i(7, 7), Vector2i(9, 17), Vector2i(13, 2), Vector2i(16, 7), Vector2i(13, 12), Vector2i(19, 11), Vector2i(17, 16), Vector2i(16, 21), Vector2i(16, 24)])
+grain = Array[Vector2i]([Vector2i(0, 7), Vector2i(10, 2), Vector2i(18, 2), Vector2i(5, 15), Vector2i(9, 22), Vector2i(13, 22)])
+hen_starts = Array[Vector2i]([Vector2i(10, 22), Vector2i(17, 22), Vector2i(17, 2), Vector2i(4, 2), Vector2i(10, 7)])
+base_hen_count = 4

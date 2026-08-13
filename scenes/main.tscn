@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://dknb2pmeby78x"]
+
+[ext_resource type="Script" uid="uid://chlp5hfaakjbx" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/playfield.tscn" id="2_playfield"]
+[ext_resource type="Texture2D" uid="uid://dh3brtfktnol" path="res://assets/generated/Cage.png" id="3_cage"]
+[ext_resource type="Script" uid="uid://b66lwdlc5j6sf" path="res://scripts/player.gd" id="4_player"]
+[ext_resource type="Script" uid="uid://c3d51do5vvt7u" path="res://scripts/hud.gd" id="5_hud"]
+[ext_resource type="Script" uid="uid://dp6cpnfgxvfrv" path="res://scripts/lift.gd" id="6_lift"]
+[ext_resource type="Script" uid="uid://u5rn11nkdpff" path="res://scripts/sfx.gd" id="7_sfx"]
+[ext_resource type="Script" uid="uid://cwigajf3s46uh" path="res://scripts/message.gd" id="8_message"]
+[ext_resource type="Script" uid="uid://cys2iny5srskj" path="res://scripts/mother_duck.gd" id="9_duck"]
+[ext_resource type="Script" uid="uid://d12lkin4h0to6" path="res://scripts/banner.gd" id="10_banner"]
+[ext_resource type="Script" uid="uid://c56n830h4wr5i" path="res://scripts/score_reporter.gd" id="11_reporter"]
+
+[node name="Main" type="Node2D" unique_id=1667949125]
+script = ExtResource("1_main")
+
+[node name="Playfield" parent="." unique_id=1844925284 instance=ExtResource("2_playfield")]
+
+[node name="Player" type="Sprite2D" parent="." unique_id=1868518191]
+texture_filter = 1
+centered = false
+script = ExtResource("4_player")
+
+[node name="Hens" type="Node2D" parent="." unique_id=1961945430]
+
+[node name="Lift" type="Node2D" parent="." unique_id=1345212424]
+script = ExtResource("6_lift")
+
+[node name="Message" type="Node2D" parent="." unique_id=992402419]
+texture_filter = 1
+script = ExtResource("8_message")
+
+[node name="Sfx" type="Node" parent="." unique_id=1120015521]
+script = ExtResource("7_sfx")
+
+[node name="ScoreReporter" type="Node" parent="."]
+script = ExtResource("11_reporter")
+
+[node name="MotherDuck" type="Sprite2D" parent="." unique_id=1647753086]
+texture_filter = 1
+centered = false
+script = ExtResource("9_duck")
+
+[node name="Banner" type="Node2D" parent="." unique_id=2093140523]
+texture_filter = 1
+script = ExtResource("10_banner")
+
+[node name="Hud" type="Node2D" parent="." unique_id=267926021]
+texture_filter = 1
+script = ExtResource("5_hud")
+
+[node name="Cage" type="Sprite2D" parent="." unique_id=1682948468]
+texture_filter = 1
+position = Vector2(0, 35)
+texture = ExtResource("3_cage")
+centered = false
