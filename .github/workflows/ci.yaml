@@ -55,7 +55,7 @@ jobs:
 
       - name: Cache Godot export templates
         id: templates
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.local/share/godot/export_templates
           key: godot-templates-${{ env.GODOT_VERSION }}
@@ -110,10 +110,11 @@ jobs:
       - name: Set up tools
         uses: jdx/mise-action@v4
 
+      # No build-root-directory: setup-gradle v6 dropped it (it was a
+      # gradle-build-action input). The action finds the wrapper itself, and
+      # the step below runs in the right place.
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
-        with:
-          build-root-directory: server
 
       - name: Test
         working-directory: server
