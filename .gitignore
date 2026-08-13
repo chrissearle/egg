@@ -1,0 +1,22 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Export output. export_presets.cfg IS committed — CI needs the preset — but the
+# exported game is a build artefact and is rebuilt on every push.
+/build/
+
+# macOS
+.DS_Store
+
+# Claude Code local settings and browser session artefacts
+.claude/settings.local.json
+.playwright-mcp/
+
+# Python bytecode from tools/
+__pycache__/
+*.pyc
+
+# Gradle build output for the server
+server/build/
+server/.gradle/
