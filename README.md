@@ -3,6 +3,9 @@
 A faithful recreation of the 1983 BBC Micro 32K game **Chuckie Egg**, built in
 [Godot 4.7](https://godotengine.org/) with typed GDScript.
 
+**▶ Play it at [egg.chrissearle.net](https://egg.chrissearle.net)** — in the browser, with a
+leaderboard for the last 24 hours, 7 days, 30 days and all time.
+
 ![The title screen](docs/screenshot-title.png)
 ![Level 1](docs/screenshot-level1.png)
 
@@ -27,6 +30,13 @@ godot scenes/main.tscn     # or run the current scene directly
 ```
 
 The window opens at 960 × 768 (3× integer scale of the native 320 × 256 canvas).
+
+### The hosted version
+
+[egg.chrissearle.net](https://egg.chrissearle.net) serves the web export alongside a small
+Kotlin/Ktor service in [`server/`](server), which hosts the game at `/play`, takes score
+submissions, and renders the leaderboard. `chuckie-egg.chrissearle.net` redirects there, so
+there is one origin and one set of browser-stored scores and key bindings.
 
 ## Controls
 

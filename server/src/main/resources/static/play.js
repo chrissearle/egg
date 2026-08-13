@@ -21,9 +21,13 @@
 
     var nav = document.createElement("nav");
     nav.id = "play-nav";
+    // The source link belongs on this page in particular: this is where the
+    // GPL-licensed WebAssembly build is actually handed to the visitor, so it
+    // is where the offer of source has to be reachable from.
     nav.innerHTML =
       '<a href="/">&larr; Chuckie Egg</a>' +
       '<a href="/scores">High scores</a>' +
+      '<a href="https://github.com/chrissearle/egg">Source</a>' +
       '<span class="hint"><kbd>S</kbd> start' +
       ' &middot; <kbd>H</kbd> hold' +
       ' &middot; <kbd>Escape</kbd>+<kbd>H</kbd> quit to title</span>';

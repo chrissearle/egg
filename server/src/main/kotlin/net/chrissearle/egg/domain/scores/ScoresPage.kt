@@ -60,7 +60,7 @@ fun Application.configureScoresPage(service: ScoresService) {
                     board("ALL TIME", leaderboard.allTime)
 
                     div("actions") {
-                        buttonLink("/play", "Play", primary = true)
+                        buttonLink("/play/", "Play", primary = true)
                         buttonLink("/", "Home")
                     }
                 }

@@ -171,7 +171,7 @@ private fun FlowContent.credits() {
                 +"Licensed under the GNU General Public License v3.0. This is a derivative "
                 +"work of pbrook/Chuckie-Egg, so GPL-3.0 is a requirement here rather than a "
                 +"preference. The complete source is at "
-                a(href = SOURCE_URL) { +"github.com/chrissearle/ChuckieEgg" }
+                a(href = SOURCE_URL) { +"github.com/chrissearle/egg" }
                 +"."
             }
             p {

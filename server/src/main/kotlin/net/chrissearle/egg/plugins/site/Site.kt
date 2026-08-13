@@ -114,7 +114,7 @@ fun FlowContent.logo() {
 }
 
 /** Where the site's pages link to each other and to the source. */
-const val SOURCE_URL = "https://github.com/chrissearle/ChuckieEgg"
+const val SOURCE_URL = "https://github.com/chrissearle/egg"
 
 /** The shared page shell: palette, font sheet, and the site's own furniture. */
 fun HTML.page(
