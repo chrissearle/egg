@@ -1,0 +1,338 @@
+/*
+ * The site's lettering is the game's own: the BBC OS font, packed into one
+ * sheet by tools/font_sheet_to_png.py. Each character is an element masked to
+ * its cell in that sheet and filled with a palette colour, which is the same
+ * thing `Message` does when it tints a glyph PNG at draw time.
+ *
+ * The sheet is emitted at 3x rather than scaled here, because a mask the
+ * browser has to resample comes out blurry and there is no reliable
+ * image-rendering equivalent for masks.
+ *
+ * Colours are the real BBC MODE 2 hardware palette and must not be softened
+ * or "improved" — see CLAUDE.md.
+ */
+
+:root {
+  --black: #000000;
+  --yellow: #ffff00;
+  --cyan: #00ffff;
+  --magenta: #ff00ff;
+  --green: #00ff00;
+
+  /* One character cell of the sheet, at the scale it was emitted. */
+  --cw: 48px;
+  --ch: 24px;
+
+  /* How many cells the sheet holds: ASCII 0x20-0x7e. */
+  --glyphs: 95;
+  --sheet: url("/assets/font_sheet.png");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/*
+ * The background has to be on html, not just body.
+ *
+ * A body background does propagate to the page canvas, but only where the
+ * canvas has actually been painted: overscroll, and the area exposed when a
+ * window is made larger, fall back to the browser's own canvas colour — which
+ * under a dark colour-scheme is grey, not black. That is the grey that appears
+ * beside and below the page until you resize it away.
+ */
+html {
+  background: var(--black);
+
+  /* Dark form controls and scrollbars, to match. */
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 2rem 1rem 4rem;
+  background: var(--black);
+  color: var(--green);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  line-height: 1.5;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---- The game's lettering ------------------------------------------------ */
+
+.t {
+  display: inline-block;
+  white-space: nowrap;
+  line-height: 0;
+}
+
+/* Word-grouped, so long runs can break rather than overflow. */
+.t.wrap {
+  white-space: normal;
+  line-height: calc(var(--ch) * 1.6);
+}
+
+.t.wrap .w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/*
+ * The sheet is scaled by setting the cell size and deriving everything from it,
+ * so a size variant is two custom properties and nothing else. --glyphs is how
+ * many cells the sheet holds, which is what turns a cell width into a sheet
+ * width.
+ */
+.t i {
+  display: inline-block;
+  width: var(--cw);
+  height: var(--ch);
+  background-color: currentColor;
+  -webkit-mask-image: var(--sheet);
+  mask-image: var(--sheet);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: calc(var(--cw) * var(--glyphs)) var(--ch);
+  mask-size: calc(var(--cw) * var(--glyphs)) var(--ch);
+  -webkit-mask-position: calc(var(--i) * var(--cw) * -1) 0;
+  mask-position: calc(var(--i) * var(--cw) * -1) 0;
+}
+
+/* Half scale, for anything that would otherwise dominate the page. */
+.t.half {
+  --cw: 24px;
+  --ch: 12px;
+}
+
+.ink-yellow {
+  color: var(--yellow);
+}
+
+.ink-cyan {
+  color: var(--cyan);
+}
+
+.ink-magenta {
+  color: var(--magenta);
+}
+
+.ink-green {
+  color: var(--green);
+}
+
+/* ---- The real CHUCKIE EGG logo ------------------------------------------- */
+
+/*
+ * Composed from the ROM letter sprites at the same offsets `Banner` uses, so
+ * the spacing is the original's rather than something eyeballed. Natural size
+ * is 608 x 30 and --logo-scale multiplies it.
+ *
+ * Integer steps only. Pixel art scaled by a fraction gets uneven pixel runs —
+ * some columns one wide, some two — which on lettering this chunky is obvious
+ * and ugly. Better a smaller crisp logo than a fluid mushy one.
+ */
+/*
+ * 320 wide, not 608: the last letter starts at column 0x90 doubled — 288 — and
+ * is 32 across, so the lettering spans exactly the game's own screen width. An
+ * earlier 608 here made the box twice as wide as its contents, which left the
+ * logo sitting well to the left of where `margin: auto` appeared to centre it.
+ */
+.logo {
+  --logo-scale: 2;
+
+  position: relative;
+  width: calc(320px * var(--logo-scale));
+  height: calc(30px * var(--logo-scale));
+  max-width: 100%;
+  margin: 0 auto 1.5rem;
+}
+
+.logo img {
+  position: absolute;
+  top: 0;
+  width: calc(32px * var(--logo-scale));
+  height: calc(30px * var(--logo-scale));
+  image-rendering: pixelated;
+}
+
+/*
+ * Breakpoints deliberately clear of the sizes they enable rather than snug
+ * against them: scale 1 needs 640px of room and scale 2 needs 1248px, but a
+ * media query measures the viewport *including* the scrollbar, so a query set
+ * at the exact fit overflows by the width of that scrollbar.
+ */
+@media (min-width: 1060px) {
+  .logo {
+    --logo-scale: 3;
+  }
+}
+
+@media (max-width: 720px) {
+  .logo {
+    --logo-scale: 1;
+  }
+
+  /*
+   * Down to the font's native cell, so a score row fits a phone instead of
+   * being scrolled to read. 48 to 16 is an exact third — three source pixels
+   * to one — so it stays crisp where a fractional step would not.
+   */
+  .t,
+  .t.half {
+    --cw: 16px;
+    --ch: 8px;
+  }
+
+  /*
+   * Stack the controls. A table cannot shrink below its content's minimum
+   * width, so on a narrow screen it stops wrapping and starts overflowing —
+   * label above value avoids the problem rather than fighting it.
+   */
+  .controls,
+  .controls tbody,
+  .controls tr,
+  .controls th,
+  .controls td {
+    display: block;
+  }
+
+  .controls th {
+    margin-top: 0.75rem;
+  }
+
+  .controls th,
+  .controls td {
+    padding-right: 0;
+  }
+}
+
+/* ---- Layout -------------------------------------------------------------- */
+
+h1,
+h2 {
+  margin: 0 0 1rem;
+  font-weight: normal;
+}
+
+section {
+  margin: 0 0 2.5rem;
+}
+
+/*
+ * Rows are fixed-pitch and can be wider than a phone. Scroll the board rather
+ * than let the page scroll sideways.
+ */
+.board {
+  overflow-x: auto;
+}
+
+.row {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.empty {
+  color: var(--magenta);
+  font-size: 0.95rem;
+}
+
+/* ---- Prose --------------------------------------------------------------- */
+
+/*
+ * Deliberately NOT in the game's font. Eight-by-eight pixel lettering at this
+ * size is unreadable for paragraphs, and the credits and licence are text that
+ * genuinely has to be read.
+ */
+.prose {
+  max-width: 70ch;
+  color: #bbb;
+  font-size: 0.95rem;
+}
+
+.prose a {
+  color: var(--cyan);
+}
+
+.prose h2 {
+  color: var(--magenta);
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
+
+.controls {
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.controls th,
+.controls td {
+  padding: 0.25rem 1.5rem 0.25rem 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.controls th {
+  color: var(--magenta);
+  font-weight: normal;
+}
+
+.controls td {
+  color: #ddd;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid #555;
+  border-radius: 3px;
+  background: #111;
+  color: var(--yellow);
+  font-family: inherit;
+  font-size: 0.9em;
+}
+
+/* ---- Actions ------------------------------------------------------------- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--green);
+  color: var(--green);
+  text-decoration: none;
+}
+
+.button:hover,
+.button:focus-visible {
+  background: var(--green);
+  color: var(--black);
+}
+
+.button.primary {
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+.button.primary:hover,
+.button.primary:focus-visible {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #333;
+}

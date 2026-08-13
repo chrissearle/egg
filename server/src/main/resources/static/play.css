@@ -1,0 +1,101 @@
+/*
+ * The game page.
+ *
+ * Injected into the exported shell through the preset's `html/head_include`,
+ * rather than by maintaining a whole custom shell: Godot regenerates index.html
+ * on every export, so anything edited there would be silently reverted by the
+ * next build.
+ *
+ * The canvas is left at the project's own 320 x 256 and scaled by CSS, so the
+ * engine renders one pixel per game pixel and the browser does the enlarging.
+ * `object-fit: contain` keeps the aspect ratio and letterboxes; `pixelated`
+ * keeps the enlargement blocky instead of smearing 1983 artwork.
+ */
+
+:root {
+  --black: #000000;
+  --green: #00ff00;
+  --yellow: #ffff00;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--black);
+  color-scheme: dark;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#play-nav {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #333;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+#play-nav a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+#play-nav a:hover,
+#play-nav a:focus-visible {
+  color: var(--yellow);
+  text-decoration: underline;
+}
+
+#play-nav .hint {
+  margin-left: auto;
+  color: #888;
+}
+
+#play-nav kbd {
+  padding: 0.05rem 0.35rem;
+  border: 1px solid #555;
+  border-radius: 3px;
+  background: #111;
+  color: var(--yellow);
+  font-family: inherit;
+}
+
+/*
+ * min-height: 0 matters — a flex item defaults to min-height: auto, which
+ * refuses to shrink below its content and would push the canvas off the bottom
+ * of a short window instead of scaling it down.
+ */
+#play-stage {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+ * !important is load-bearing here, not laziness. With the Project resize
+ * policy the engine writes the canvas's size into its *inline* style on load
+ * and on every resize, pinning it to the project's 960 x 768 window override —
+ * which overflows any window smaller than that and ignores an external
+ * stylesheet entirely. Inline styles lose only to !important.
+ *
+ * The drawing buffer stays whatever the engine chose; object-fit then scales
+ * that buffer into the box and letterboxes it, and `pixelated` keeps the
+ * enlargement blocky rather than smeared.
+ */
+#canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
