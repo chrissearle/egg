@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      # Retags what main already built rather than building again, so the image
+      # a tag releases is bit-for-bit the one that was tested on main.
+      - name: Tag release from staging
+        run: |
+          docker buildx imagetools create \
+            --tag ghcr.io/${{ github.repository_owner }}/egg:release \
+            ghcr.io/${{ github.repository_owner }}/egg:staging
+
+          docker buildx imagetools create \
+            --tag ghcr.io/${{ github.repository_owner }}/egg:${{ github.ref_name }} \
+            ghcr.io/${{ github.repository_owner }}/egg:staging
+
+      # The Flux image bump goes here once apps/egg.chrissearle.net exists in
+      # flux-hetzner. It needs a FLUX_TOKEN secret and posts a repository
+      # dispatch of type bump-image with service, image and tag.
+
+      - name: Generate summary
+        run: |
+          echo "Released: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Image: ghcr.io/${{ github.repository_owner }}/egg:${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
