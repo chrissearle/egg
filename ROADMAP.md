@@ -590,8 +590,9 @@ boundary into level 10, confirming the hens vanish and the duck appears.
 ## M12 — High scores ✅
 
 - [x] Ten-entry table, shown on the title
-- [x] Name entry when a player qualifies
-- [x] Persisted to `user://highscores.cfg`
+- [x] Name entry when a player clears the submission bar
+- [x] Persisted to `user://highscores.cfg`, stamped with the day and reset when it rolls over
+- [x] Submission to the site gated on a fixed bar, not on the local table
 
 pbrook leaves this as a `/* Highscores. */` comment, so everything came from the disassembly's
 `init_highscores`, `compare_highscores`, `shift_highscores`, `check_highscore` and
@@ -608,6 +609,22 @@ pbrook leaves this as a `/* Highscores. */` comment, so everything came from the
 
 Two glyphs had to be added rather than aliased: `&` for the default names and `>` for the name
 prompt's caret. Aliasing them to `K` and `I` rendered the defaults as "AKF".
+
+**The table does not decide what reaches the site.** It did originally — `check_highscore`'s
+return value was what triggered name entry, and name entry was the only route to
+`ScoreReporter.submit`. Since the table is per-browser and only ever ratchets upward, that
+inverted the intent of the site's windows: a fresh browser submitted nearly every run while a
+regular player's saturated table submitted almost nothing, silencing exactly the scores worth
+recording. The prompt now fires on `HighScores.SUBMIT_FLOOR` (1000, the shipped `"A&F"` value),
+which is fixed forever and identical for everyone; the local insert still happens alongside and
+may place at nothing, so `_naming` can be -1 during name entry. The score therefore comes from
+`PlayerState.score_value()` rather than being read back out of a table slot.
+
+**The table is a daily board.** `save` stamps the local calendar date; `load_saved` drops the
+file when that no longer matches, falling through to the shipped defaults on the same path a
+malformed save takes. Checked only at startup, so midnight never wipes a board mid-session. The
+permanent record lives on the site, which is what its 24 hour / 7 day / 30 day / all time
+windows are for.
 
 ⚠️ **The attract carousel is still not built.** The title now shows the high scores, which was
 one of its three screens; the key bindings need M13, and the banner needs the unextracted

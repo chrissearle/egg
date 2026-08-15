@@ -15,6 +15,14 @@ extends RefCounted
 ## Scores are compared digit by digit from the most significant, and a score
 ## ties *downward*: it has to beat an entry outright to take its place, so
 ## equalling the table changes nothing.
+##
+## The table is *this browser's board for today* — it is stamped with the local
+## calendar date and starts over when that changes. The site holds the permanent
+## record, with its own 24 hour, 7 day, 30 day and all time windows.
+##
+## The table deliberately has no say in what reaches the site. It only ever
+## ratchets upward, so gating submission on it would silence the players with
+## the most to record; SUBMIT_FLOOR is the fixed bar instead.
 
 const ENTRY_COUNT := 10
 const SCORE_DIGITS := 8
@@ -25,6 +33,11 @@ const NAME_LENGTH := 8
 const DEFAULT_NAME := "A&F"
 const DEFAULT_SCORE_DIGIT := 4
 const DEFAULT_SCORE_VALUE := 1
+
+## What a shipped entry is worth, and the permanent bar for submitting to the
+## site's leaderboard. Beating "A&F" is what the original asks of you, and it is
+## the same ask on a fresh browser and on one with a full table.
+const SUBMIT_FLOOR := 1000
 
 const SAVE_PATH := "user://highscores.cfg"
 
@@ -112,19 +125,37 @@ func score_value(index: int) -> int:
 	return total
 
 
+## Which day a saved table belongs to, as the player's own local calendar date.
+##
+## `get_datetime_dict_from_system` is local unless asked for UTC, which is what
+## we want: the board turning over at the player's midnight rather than at
+## someone else's is the whole point.
+func _period_id() -> String:
+	var now := Time.get_datetime_dict_from_system()
+	return "%04d-%02d-%02d" % [now["year"], now["month"], now["day"]]
+
+
 func save() -> void:
 	var file := ConfigFile.new()
+	file.set_value("meta", "period", _period_id())
 	for index in entries.size():
 		file.set_value("scores", "name_%d" % index, entries[index]["name"])
 		file.set_value("scores", "score_%d" % index, Array(entries[index]["score"]))
 	file.save(SAVE_PATH)
 
 
-## Reads the saved table, leaving the defaults in place if there is none or it
-## is malformed.
+## Reads the saved table, leaving the defaults in place if there is none, it is
+## from an earlier day, or it is malformed.
+##
+## The day is only checked here, and this runs once at startup, so a session
+## left open across midnight keeps the board it has been playing against. That
+## is deliberate — nothing should wipe the table out from under a player
+## mid-game.
 func load_saved() -> void:
 	var file := ConfigFile.new()
 	if file.load(SAVE_PATH) != OK:
+		return
+	if file.get_value("meta", "period", "") != _period_id():
 		return
 	var restored: Array[Dictionary] = []
 	for index in ENTRY_COUNT:

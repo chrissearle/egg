@@ -617,8 +617,11 @@ func _tick_farewell() -> void:
 	_farewell_ticks -= 1
 	if _farewell_ticks <= 0:
 		# check_highscore runs as each player finishes, not at the end.
+		# The insert is for the local board only and may not place at all; what
+		# decides the name prompt is the fixed submission bar, so a good run
+		# still reaches the site once the local table has filled up.
 		_naming = scores.insert(state.score)
-		if _naming >= 0:
+		if state.score_value() > HighScores.SUBMIT_FLOOR:
 			_typed = ""
 			_show_name_entry()
 			return
@@ -654,13 +657,16 @@ func _show_name_entry() -> void:
 ## This is the only place a completed name and score exist together, which is
 ## why it is the submission point. The reporter is fire-and-forget and does
 ## nothing at all on desktop, so the hand-over below is not delayed by it.
+##
+## `_naming` is -1 when the run cleared the submission bar without placing on
+## the local board. `name_entry` ignores that, and the score comes from the
+## player rather than from a table slot that may not exist. `state` is still the
+## finishing player: the hand-over is the last thing this does.
 func _finish_naming() -> void:
 	var entered := _typed if _typed != "" else HighScores.DEFAULT_NAME
 	scores.name_entry(_naming, entered)
 	scores.save()
-	# Read the value back through the table: it holds the score as eight BCD
-	# digits, and score_value is what turns those into a number.
-	_reporter.submit(entered, scores.score_value(_naming), current_level + 1)
+	_reporter.submit(entered, state.score_value(), current_level + 1)
 	_naming = -1
 	_message.clear()
 	_next_player()

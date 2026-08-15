@@ -35,8 +35,11 @@ The window opens at 960 × 768 (3× integer scale of the native 320 × 256 canva
 
 [egg.chrissearle.net](https://egg.chrissearle.net) serves the web export alongside a small
 Kotlin/Ktor service in [`server/`](server), which hosts the game at `/play`, takes score
-submissions, and renders the leaderboard. `chuckie-egg.chrissearle.net` redirects there, so
-there is one origin and one set of browser-stored scores and key bindings.
+submissions, and renders the leaderboard over four windows — last 24 hours, 7 days, 30 days and
+all time — so getting onto a board stays achievable as the all-time list fills up.
+`chuckie-egg.chrissearle.net` redirects there, so there is one origin and one set of
+browser-stored scores and key bindings. See [High scores](#high-scores) for how the in-game
+table relates to it.
 
 ## Controls
 
@@ -76,6 +79,32 @@ here are worth stating:
   Steering or reversing in mid-air remains impossible, exactly as in the original.
 - Arrow keys are the movement default. The original's defaults are its own letter keys, which
   would be an odd thing to inflict on a modern player.
+
+## High scores
+
+The in-game table is the original's: ten entries, defaults of `"A&F"` scoring 1000, ties going
+downward, checked as each player finishes rather than once at the end. It lives in
+`user://highscores.cfg`, which on the web build means browser storage — so it is *your* board,
+not a shared one. The shared boards are on the site.
+
+Two intentional differences, both consequences of there being a leaderboard at all:
+
+- **Name entry is asked for on any run over 1000, not only on one that makes the table.** In
+  the original the table *is* the whole reward, so qualifying for it is the natural prompt. Here
+  qualifying also decided what got submitted to the site, and since the table is per-browser and
+  only ever ratchets upward, that inverted what the site's time windows are for: a fresh browser
+  submitted nearly every run, while a regular player's saturated table submitted almost nothing
+  — silencing exactly the scores worth recording. The bar is now fixed at 1000, the shipped
+  `"A&F"` value, so it is the same ask on day one and on day two hundred. The visible effect is
+  that the name prompt appears more often than the original's would.
+- **The table resets daily.** It is stamped with the local calendar date and starts over from
+  the defaults when that changes, making it a board for today rather than a permanent wall of
+  your own past bests. The stamp is only checked at startup, so midnight never clears a board
+  mid-session. Nothing is lost by this: anything above the bar was already sent to the site,
+  which keeps the permanent record.
+
+Neither affects single-player faithfulness in any way the 1983 game could have expressed — it
+had nowhere to send a score to.
 
 ## Project layout
 
