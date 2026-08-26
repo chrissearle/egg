@@ -1,6 +1,6 @@
 [versions]
 arrow = "2.2.3"
-dependency_analysis = "3.18.0"
+dependency_analysis = "3.19.1"
 detekt = "2.0.0-alpha.6"
 gradle_versions_filter = "0.1.16"
 jacoco = "0.8.15"
