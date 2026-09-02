@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.26
+# syntax=docker/dockerfile:1.27
 
 # The Godot export is NOT built here. Producing it needs the engine plus a
 # 1.2GB template download, which has no business in an image build — CI runs
