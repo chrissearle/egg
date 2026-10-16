@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://cys2iny5srskj" path="res://scripts/mother_duck.gd" id="9_duck"]
 [ext_resource type="Script" uid="uid://d12lkin4h0to6" path="res://scripts/banner.gd" id="10_banner"]
 [ext_resource type="Script" uid="uid://c56n830h4wr5i" path="res://scripts/score_reporter.gd" id="11_reporter"]
+[ext_resource type="Script" uid="uid://c7w7r6t35n6om" path="res://scripts/analytics_reporter.gd" id="12_analytics"]
 
 [node name="Main" type="Node2D" unique_id=1667949125]
 script = ExtResource("1_main")
@@ -36,6 +37,9 @@ script = ExtResource("7_sfx")
 
 [node name="ScoreReporter" type="Node" parent="."]
 script = ExtResource("11_reporter")
+
+[node name="AnalyticsReporter" type="Node" parent="."]
+script = ExtResource("12_analytics")
 
 [node name="MotherDuck" type="Sprite2D" parent="." unique_id=1647753086]
 texture_filter = 1

@@ -455,3 +455,11 @@ First milestone covers:
 - 1–4 players alternating
 
 Lifts and Mother Duck are post-MVP.
+
+---
+
+## Metrics and analytics
+
+- **Prometheus:** the server's Micrometer endpoint is `/api/metrics` (`domain/monitoring/Monitoring.kt`): JVM, Ktor request histograms, and `app_build_info{version}` from `BuildInfo`. That last one is a Prometheus `Info` metric, because a Micrometer gauge with that name would be exported as `app_build`. Scraped by a ServiceMonitor in flux-hetzner; dashboard "Ktor API + JVM".
+- **Umami:** `/static/analytics.js` is loaded by every server page (`Site.kt` `page()`, `ANALYTICS_SCRIPT`) and by the game page, through `html/head_include` in `export_presets.cfg`. It fetches `/api/analytics` (`domain/analytics/`), which returns the `egg.umami` settings from `application.conf` (env `UMAMI_WEBSITE_ID`, `UMAMI_DOMAINS` comma-separated, `UMAMI_SRC`), or 204 when they're unset, and then loads the tracker only on a configured host. No ids or hostnames in the code.
+- **Game events:** `scripts/analytics_reporter.gd` (`AnalyticsReporter`, a child of Main, called down from `main.gd`) sends events through `JavaScriptBridge` to `window.eggTrack`, which `analytics.js` defines. The events are `game-start` {players, level}, `level-complete` {level} and `game-over` {player, players, score, level}, one per player who runs out of lives. Levels are 1-based, as in score submissions. It is web-only and fire-and-forget; `eggTrack` queues events until the tracker loads, and drops them if there is no tracker.

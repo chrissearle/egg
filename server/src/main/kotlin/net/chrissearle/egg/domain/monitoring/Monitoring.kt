@@ -1,5 +1,7 @@
 package net.chrissearle.egg.domain.monitoring
 
+import arrow.core.getOrElse
+import arrow.core.raise.either
 import io.ktor.http.HttpHeaders
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -19,9 +21,14 @@ import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import io.prometheus.metrics.core.metrics.Info
+import net.chrissearle.egg.plugins.BuildInfo
 import org.slf4j.event.Level
 
 private val pollingPaths = setOf("/health", "/api/metrics")
+
+// The version label when image-tag.txt is present but can't be read
+private const val UNREADABLE_VERSION = "unknown"
 
 fun Application.configureMonitoring() {
     val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
@@ -36,6 +43,18 @@ fun Application.configureMonitoring() {
                 ProcessorMetrics()
             )
     }
+
+    // Same series as the other apps, so the Ktor dashboard can show and
+    // annotate what is deployed. A Prometheus Info metric rather than a
+    // Micrometer gauge: the registry treats _info as reserved and would export
+    // a gauge as app_build
+    Info
+        .builder()
+        .name("app_build_info")
+        .help("Deployed build, from the image tag; always 1")
+        .labelNames("version")
+        .register(appMicrometerRegistry.prometheusRegistry)
+        .setLabelValues(either { BuildInfo.imageTag() }.getOrElse { UNREADABLE_VERSION })
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path() !in pollingPaths }

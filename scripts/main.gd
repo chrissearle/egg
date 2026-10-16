@@ -222,6 +222,7 @@ var _ready_ticks := 0
 @onready var _duck: MotherDuck = $MotherDuck
 @onready var _banner: Banner = $Banner
 @onready var _reporter: ScoreReporter = $ScoreReporter
+@onready var _analytics: AnalyticsReporter = $AnalyticsReporter
 
 
 func _ready() -> void:
@@ -442,6 +443,7 @@ func start_game(player_count: int = 1, level_index: int = 0) -> void:
 	state = players[0]
 	_hud.bind(state, clock)
 	load_level(level_index)
+	_analytics.game_started(players.size(), level_index + 1)
 	_begin_life()
 
 
@@ -889,6 +891,7 @@ func _say_farewell() -> void:
 	phase = Phase.FAREWELL
 	_farewell_ticks = maxi(1, ceili(FAREWELL_SECONDS / TICK_SECONDS))
 	player_finished.emit(player_number())
+	_analytics.player_finished(player_number(), players.size(), state.score_value(), current_level + 1)
 	_hide_level()
 	_message.show_lines([
 		{
@@ -952,6 +955,7 @@ func _convert_bonus() -> void:
 ## Once the bonus is spent, move to the next level.
 func _after_bonus() -> void:
 	level_completed.emit(current_level)
+	_analytics.level_completed(current_level + 1)
 	load_level(current_level + 1)
 
 

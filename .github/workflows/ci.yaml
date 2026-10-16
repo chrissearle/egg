@@ -13,10 +13,10 @@ permissions:
   packages: write
 
 env:
-  GODOT_VERSION: 4.7.1-stable
+  GODOT_VERSION: 4.7.2-stable
   # Godot looks for templates in a directory named after the version it
   # reports, which drops the "-stable" and adds a dot.
-  GODOT_TEMPLATE_DIR: 4.7.1.stable
+  GODOT_TEMPLATE_DIR: 4.7.2.stable
 
 jobs:
   meta:

@@ -2,6 +2,8 @@ package net.chrissearle.egg
 
 import io.ktor.server.application.Application
 import io.ktor.server.cio.EngineMain
+import net.chrissearle.egg.domain.analytics.analyticsSettings
+import net.chrissearle.egg.domain.analytics.configureAnalytics
 import net.chrissearle.egg.domain.monitoring.configureMonitoring
 import net.chrissearle.egg.domain.scores.ScoreStore
 import net.chrissearle.egg.domain.scores.configureScoresPage
@@ -23,6 +25,14 @@ fun Application.module() {
     configureSerialization()
     configureMonitoring()
     configureRouting()
+
+    configureAnalytics(
+        analyticsSettings(
+            websiteId = confStr("egg.umami.websiteId"),
+            domains = confStr("egg.umami.domains"),
+            src = confStr("egg.umami.src")
+        )
+    )
 
     configureLandingPage(service)
     configureScoresRouting(service)

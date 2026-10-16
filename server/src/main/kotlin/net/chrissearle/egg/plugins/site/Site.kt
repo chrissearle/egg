@@ -14,6 +14,7 @@ import kotlinx.html.lang
 import kotlinx.html.link
 import kotlinx.html.main
 import kotlinx.html.meta
+import kotlinx.html.script
 import kotlinx.html.span
 import kotlinx.html.title
 
@@ -116,6 +117,9 @@ fun FlowContent.logo() {
 /** Where the site's pages link to each other and to the source. */
 const val SOURCE_URL = "https://github.com/chrissearle/egg"
 
+/** Served from resources/static; also named in the game's export preset. */
+const val ANALYTICS_SCRIPT = "/static/analytics.js"
+
 /** The shared page shell: palette, font sheet, and the site's own furniture. */
 fun HTML.page(
     pageTitle: String,
@@ -128,6 +132,9 @@ fun HTML.page(
         title(pageTitle)
         link(rel = "stylesheet", href = "/static/style.css")
         link(rel = "icon", href = "/assets/banner/E.png")
+        // Loads the analytics tracker when the deployment configures one; the
+        // game page gets the same script through its export preset
+        script(src = ANALYTICS_SCRIPT) { defer = true }
     }
     body {
         main {
