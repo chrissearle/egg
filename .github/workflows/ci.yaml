@@ -18,6 +18,10 @@ env:
   # reports, which drops the "-stable" and adds a dot.
   GODOT_TEMPLATE_DIR: 4.7.2.stable
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   meta:
     runs-on: ubuntu-latest
