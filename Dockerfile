@@ -49,4 +49,6 @@ EXPOSE 8080
 # the container layer.
 VOLUME ["/data"]
 
+ENV JAVA_OPTS="-Duser.timezone=UTC"
+
 CMD ["/opt/app/bin/egg"]

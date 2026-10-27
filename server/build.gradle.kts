@@ -38,7 +38,7 @@ dependencies {
     implementation(libs.bundles.serialization)
     implementation(libs.bundles.monitoring)
     implementation(libs.arrow.core)
-    runtimeOnly(libs.logback.classic)
+    runtimeOnly(libs.bundles.logging)
 
     testImplementation(libs.bundles.test)
     testRuntimeOnly(libs.kotlin.test.junit)
