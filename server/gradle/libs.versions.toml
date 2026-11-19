@@ -13,7 +13,7 @@ kotlinx_serialization = "1.13.0"
 ktor = "3.6.1"
 log4j2 = "2.26.1"
 mockk = "1.14.12"
-prometheus = "1.17.2"
+prometheus = "1.18.0"
 
 [libraries]
 arrow-core = { group = "io.arrow-kt", name = "arrow-core", version.ref = "arrow" }
